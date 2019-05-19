@@ -48,7 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define CM1106_I2C_DELAY_FOR_ACK 500
 
-#define CM1106_I2C_DEBUG
+// #define CM1106_I2C_DEBUG
 
 class CM1106_I2C
 {

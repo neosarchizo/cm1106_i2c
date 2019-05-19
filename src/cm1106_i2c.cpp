@@ -300,7 +300,7 @@ uint8_t CM1106_I2C::calibration(uint16_t adjust_value)
 
 #ifdef CM1106_I2C_DEBUG
   Serial.print("Adjust value : ");
-  Serial.println((_buffer[2] << 8) + _buffer[3]);
+  Serial.println((_buffer[1] << 8) + _buffer[2]);
 #endif
 }
 
