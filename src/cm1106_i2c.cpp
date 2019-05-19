@@ -449,7 +449,7 @@ uint8_t CM1106_I2C::check_sw_version()
 
   for (uint8_t i = 1; i < 10; i++)
   {
-    Serial.print(_buffer[i]);
+    Serial.print((char)_buffer[i]);
   }
   Serial.println();
 }
