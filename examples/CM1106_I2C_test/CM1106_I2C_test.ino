@@ -2,6 +2,8 @@
 
 CM1106_I2C cm1106_i2c;
 
+#define CM1107
+
 void setup() {
   cm1106_i2c.begin();
   Serial.begin(9600);
@@ -19,6 +21,11 @@ void loop() {
     Serial.print("Co2 : ");
     Serial.println(cm1106_i2c.co2);
     Serial.print("Status : ");
+
+
+#if defined(CM1107)
+    
+#else
     switch (cm1106_i2c.status) {
       case CM1106_I2C_STATUS_PREHEATING: {
           Serial.println("Preheating");
@@ -41,6 +48,11 @@ void loop() {
           break;
         }
     }
+#endif
+    
+
+
+    
   }
   delay(1000);
 }
