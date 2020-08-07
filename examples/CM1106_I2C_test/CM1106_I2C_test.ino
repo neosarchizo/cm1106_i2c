@@ -2,7 +2,7 @@
 
 CM1106_I2C cm1106_i2c;
 
-#define CM1107
+// #define CM1107
 
 void setup() {
   cm1106_i2c.begin();
@@ -24,6 +24,48 @@ void loop() {
 
 
 #if defined(CM1107)
+    if (cm1106_i2c.status & (1 << CM1106_I2C_STATUS_CM1107_PREHEATING)) {
+      Serial.println("Preheating");
+    } else {
+      Serial.println("Preheat complete");
+    }
+
+    if (cm1106_i2c.status & (1 << CM1106_I2C_STATUS_CM1107_OPERATING_NORMAL)) {
+      Serial.println("Sensor Error");
+    } else {
+      Serial.println("Operating normal");
+    }
+
+    if (cm1106_i2c.status & (1 << CM1106_I2C_STATUS_CM1107_OVER_MEASUREMENT_RANGE)) {
+      Serial.println("Over Measurement Range");
+    } else {
+      Serial.println("Normal Measurement Range");
+    }
+
+    if (cm1106_i2c.status & (1 << CM1106_I2C_STATUS_CM1107_LESS_THAN_MEASUREMENT_RANGE)) {
+      Serial.println("Less than Measurement Range");
+    } else {
+      Serial.println("Normal Measurement Range");
+    }
+
+    if (cm1106_i2c.status & (1 << CM1106_I2C_STATUS_CM1107_CALIBRATED)) {
+      Serial.println("Non-calibrated");
+    } else {
+      Serial.println("Calibrated");
+    }
+
+    if (cm1106_i2c.status & (1 << CM1106_I2C_STATUS_CM1107_LIGHT_AGING)) {
+      Serial.println("Light Aging");
+    } else {
+      Serial.println("Light Normal");
+    }
+
+    if (cm1106_i2c.status & (1 << CM1106_I2C_STATUS_CM1107_DRIFT)) {
+      Serial.println("Drift");
+    } else {
+      Serial.println("Non-Drift");
+    }
+
     
 #else
     switch (cm1106_i2c.status) {
