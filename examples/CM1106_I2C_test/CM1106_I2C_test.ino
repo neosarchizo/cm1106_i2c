@@ -20,7 +20,7 @@ void loop() {
   if (ret == 0) {
     Serial.print("Co2 : ");
     Serial.println(cm1106_i2c.co2);
-    Serial.print("Status : ");
+    Serial.println("Status >>");
 
 
 #if defined(CM1107)
