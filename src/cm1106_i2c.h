@@ -63,7 +63,7 @@ class CM1106_I2C
 {
 
 public:
-  void begin();
+  void begin(TwoWire &wirePort = Wire); //By default use Wire port
   uint8_t measure_result();
   uint8_t auto_zero_setting(uint8_t zero_setting_switch, uint8_t period, uint16_t concentration_value);
   uint8_t calibration(uint16_t adjust_value);
@@ -76,6 +76,7 @@ public:
 
 private:
   uint8_t _buffer[32];
+  TwoWire *_i2cPort; //The generic connection to user's chosen I2C hardware
 };
 
 #endif
