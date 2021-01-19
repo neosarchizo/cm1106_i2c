@@ -26,10 +26,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * Start CM1106 I2C library
  */
-void CM1106_I2C::begin()
+void CM1106_I2C::begin(TwoWire &wirePort)
 {
-  // Start the Wire library
-  Wire.begin();
+  _i2cPort = &wirePort; //Grab which port the user wants us to use
+
+  //We expect caller to begin their I2C port, with the speed of their choice external to the library
+  //But if they forget, we start the hardware here.
+  _i2cPort->begin();
 }
 
 /**
@@ -50,16 +53,16 @@ uint8_t CM1106_I2C::get_status()
  */
 uint8_t CM1106_I2C::measure_result()
 {
-  Wire.beginTransmission(CM1106_I2C_ADDRESS);
-  Wire.write(CM1106_I2C_CMD_MEASURE_RESULT);
-  Wire.endTransmission();
+  _i2cPort->beginTransmission(CM1106_I2C_ADDRESS);
+  _i2cPort->write(CM1106_I2C_CMD_MEASURE_RESULT);
+  _i2cPort->endTransmission();
   delay(CM1106_I2C_DELAY_FOR_ACK);
-  Wire.requestFrom(CM1106_I2C_ADDRESS, 5);
+  _i2cPort->requestFrom(CM1106_I2C_ADDRESS, 5);
   uint8_t idx = 0;
 
-  while (Wire.available())
+  while (_i2cPort->available())
   { // slave may send less than requested
-    uint8_t b = Wire.read();
+    uint8_t b = _i2cPort->read();
     _buffer[idx++] = b;
     if (idx == 5)
       break;
@@ -148,22 +151,22 @@ uint8_t CM1106_I2C::auto_zero_setting(uint8_t zero_setting_switch, uint8_t perio
     return 6;
   }
 
-  Wire.beginTransmission(CM1106_I2C_ADDRESS);
-  Wire.write(CM1106_I2C_CMD_AUTO_ZERO_SETTING);
-  Wire.write(100);                               // Wrong code accelerate value  : (default) 100
-  Wire.write(zero_setting_switch);               // Zero setting switch : 0(Open), 2(Close)
-  Wire.write(period);                            // Calibration period : 1 ~ 15
-  Wire.write((concentration_value >> 8) & 0xFF); // Calibration conecntration value : 400 ~ 1,499
-  Wire.write(concentration_value & 0xFF);        // Calibration conecntration value
-  Wire.write(100);                               // Reserved byte : (default) 100
-  Wire.endTransmission();
+  _i2cPort->beginTransmission(CM1106_I2C_ADDRESS);
+  _i2cPort->write(CM1106_I2C_CMD_AUTO_ZERO_SETTING);
+  _i2cPort->write(100);                               // Wrong code accelerate value  : (default) 100
+  _i2cPort->write(zero_setting_switch);               // Zero setting switch : 0(Open), 2(Close)
+  _i2cPort->write(period);                            // Calibration period : 1 ~ 15
+  _i2cPort->write((concentration_value >> 8) & 0xFF); // Calibration conecntration value : 400 ~ 1,499
+  _i2cPort->write(concentration_value & 0xFF);        // Calibration conecntration value
+  _i2cPort->write(100);                               // Reserved byte : (default) 100
+  _i2cPort->endTransmission();
   delay(CM1106_I2C_DELAY_FOR_ACK);
-  Wire.requestFrom(CM1106_I2C_ADDRESS, 8);
+  _i2cPort->requestFrom(CM1106_I2C_ADDRESS, 8);
   uint8_t idx = 0;
 
-  while (Wire.available())
+  while (_i2cPort->available())
   { // slave may send less than requested
-    uint8_t b = Wire.read();
+    uint8_t b = _i2cPort->read();
     _buffer[idx++] = b;
     if (idx == 8)
       break;
@@ -244,18 +247,18 @@ uint8_t CM1106_I2C::calibration(uint16_t adjust_value)
     return 4;
   }
 
-  Wire.beginTransmission(CM1106_I2C_ADDRESS);
-  Wire.write(CM1106_I2C_CMD_CALIBRATION);
-  Wire.write((adjust_value >> 8) & 0xFF);
-  Wire.write(adjust_value & 0xFF);
-  Wire.endTransmission();
+  _i2cPort->beginTransmission(CM1106_I2C_ADDRESS);
+  _i2cPort->write(CM1106_I2C_CMD_CALIBRATION);
+  _i2cPort->write((adjust_value >> 8) & 0xFF);
+  _i2cPort->write(adjust_value & 0xFF);
+  _i2cPort->endTransmission();
   delay(CM1106_I2C_DELAY_FOR_ACK);
-  Wire.requestFrom(CM1106_I2C_ADDRESS, 4);
+  _i2cPort->requestFrom(CM1106_I2C_ADDRESS, 4);
   uint8_t idx = 0;
 
-  while (Wire.available())
+  while (_i2cPort->available())
   { // slave may send less than requested
-    uint8_t b = Wire.read();
+    uint8_t b = _i2cPort->read();
     _buffer[idx++] = b;
     if (idx == 4)
       break;
@@ -314,16 +317,16 @@ uint8_t CM1106_I2C::calibration(uint16_t adjust_value)
 uint8_t CM1106_I2C::read_serial_number()
 {
 
-  Wire.beginTransmission(CM1106_I2C_ADDRESS);
-  Wire.write(CM1106_I2C_CMD_READ_SERIAL_NUMBER);
-  Wire.endTransmission();
+  _i2cPort->beginTransmission(CM1106_I2C_ADDRESS);
+  _i2cPort->write(CM1106_I2C_CMD_READ_SERIAL_NUMBER);
+  _i2cPort->endTransmission();
   delay(CM1106_I2C_DELAY_FOR_ACK);
-  Wire.requestFrom(CM1106_I2C_ADDRESS, 12);
+  _i2cPort->requestFrom(CM1106_I2C_ADDRESS, 12);
   uint8_t idx = 0;
 
-  while (Wire.available())
+  while (_i2cPort->available())
   { // slave may send less than requested
-    uint8_t b = Wire.read();
+    uint8_t b = _i2cPort->read();
     _buffer[idx++] = b;
     if (idx == 12)
       break;
@@ -393,16 +396,16 @@ uint8_t CM1106_I2C::read_serial_number()
 uint8_t CM1106_I2C::check_sw_version()
 {
 
-  Wire.beginTransmission(CM1106_I2C_ADDRESS);
-  Wire.write(CM1106_I2C_CMD_CHECK_SW_VERSION);
-  Wire.endTransmission();
+  _i2cPort->beginTransmission(CM1106_I2C_ADDRESS);
+  _i2cPort->write(CM1106_I2C_CMD_CHECK_SW_VERSION);
+  _i2cPort->endTransmission();
   delay(CM1106_I2C_DELAY_FOR_ACK);
-  Wire.requestFrom(CM1106_I2C_ADDRESS, 12);
+  _i2cPort->requestFrom(CM1106_I2C_ADDRESS, 12);
   uint8_t idx = 0;
 
-  while (Wire.available())
+  while (_i2cPort->available())
   { // slave may send less than requested
-    uint8_t b = Wire.read();
+    uint8_t b = _i2cPort->read();
     _buffer[idx++] = b;
     if (idx == 12)
       break;
